@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+        <link rel="stylesheet" href="/main.css">
+		<title>brainsoup</title>
+	</head>
+	<body>
+        <div id="root-window">
+            <div id="render-target">
+                <div id="ui-toolbar">
+                    <button id="button-add-dowel" class="ui-toolbar-button" onclick="setActiveTool(event, 'add-dowel')">Add Dowel</button>
+                </div>
+            </div>
+        </div>
+		<script type="module">
+            import { createBuilder } from './source/builder.js';
+
+            let selectedControl = document.getElementById('button-add-dowel');
+
+            window.onload = () => {
+                window.builder = createBuilder();
+            }
+
+            window.setActiveTool = (event, toolID) => {
+                if (selectedControl) {
+                    selectedControl.classList.remove('selected');
+                }
+                selectedControl = event.target;
+                selectedControl.classList.add('selected');
+                window.builder.setActiveTool(toolID);
+            }
+        </script>
+	</body>
+</html>
