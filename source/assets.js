@@ -8,6 +8,14 @@ const assets = {
         mesh.userData = { id: 'dowel' };
         mesh.position.set(x, y + length/2, z);
         return mesh;
+    },
+    'ghost-dowel': (x, y, z, length, thickness) => {
+        const geometry = new THREE.CylinderGeometry(thickness, thickness, length, 32);
+        const material = new THREE.MeshStandardMaterial({color:0x000000});
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData = { id: 'ghost-dowel' };
+        mesh.position.set(x, y + length/2, z);
+        return mesh;
     }
 }
 

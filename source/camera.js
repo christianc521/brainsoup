@@ -69,6 +69,7 @@ export function createCamera(window){
         
         previousMouseX = event.clientX;
         previousMouseY = event.clientY;
+        
     }
 
     function updateCameraPosition(){
