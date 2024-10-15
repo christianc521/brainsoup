@@ -10,11 +10,15 @@
             <div id="render-target">
                 <div id="ui-toolbar">
                     <button id="button-add-dowel" class="ui-toolbar-button" onclick="setActiveTool(event, 'add-dowel')">Add Dowel</button>
+                    <button id="button-set-position" class="ui-toolbar-button" onclick="setActiveTool(event, 'empty')">Set Position</button>
                 </div>
+                
             </div>
         </div>
 		<script type="module">
             import { createBuilder } from './source/builder.js';
+            //hide set position button
+            document.getElementById('button-set-position').style.display = 'none';
 
             let selectedControl = document.getElementById('button-add-dowel');
 
@@ -29,6 +33,15 @@
                 selectedControl = event.target;
                 selectedControl.classList.add('selected');
                 window.builder.setActiveTool(toolID);
+                // if tool is add-dowel, hide add dowel button
+                
+                if (toolID === 'add-dowel') {
+                    document.getElementById('button-add-dowel').style.display = 'none';
+                    document.getElementById('button-set-position').style.display = 'block';
+                } else {
+                    document.getElementById('button-add-dowel').style.display = 'block';
+                    document.getElementById('button-set-position').style.display = 'none';
+                }
             }
         </script>
 	</body>

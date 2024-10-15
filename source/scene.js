@@ -53,6 +53,10 @@ export function createScene() {
         scene.add(object);
     }
 
+    function removeObject(object) {
+        scene.remove(object);
+    }
+
     function onMouseDown(event){
         camera.onMouseDown(event);
 
@@ -60,7 +64,20 @@ export function createScene() {
         mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera.camera);
-        let intersections = raycaster.intersectObjects(scene.children, true);
+        let intersections = raycaster.intersectObjects(scene.children, true)
+        .filter(intersection => {
+            let obj = intersection.object;
+            let objectID = obj.userData ? obj.userData.id : undefined;
+            while (obj && !objectID) {
+                obj = obj.parent;
+                objectID = obj && obj.userData ? obj.userData.id : undefined;
+            }
+            if (objectID) {
+                return true;
+            }
+            return false;
+        });
+        
 
         if (intersections.length > 0){
             const intersection = intersections[0];
@@ -74,10 +91,11 @@ export function createScene() {
             }
 
             // call the objectClicked function with the objectID and intersection point
-            if (this.objectClicked) {
-                this.objectClicked(objectID, intersection.point);
+            if (objectClicked) {
+                objectClicked(objectID, intersection.point);
             }
             
+            console.log(objectID, intersection.point);
         }
             
     }
@@ -90,9 +108,5 @@ export function createScene() {
         camera.onMouseMove(event);
     }
 
-    return { initialize, start, stop, onMouseDown, onMouseUp, onMouseMove, objectClicked, addObject};
+    return { initialize, start, stop, onMouseDown, onMouseUp, onMouseMove, objectClicked, addObject, removeObject, camera: camera.camera, renderer, scene };
 }
-
-
-
-
