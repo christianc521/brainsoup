@@ -1,91 +1,71 @@
 import * as THREE from 'three';
 
-export function createCamera(window){
+const DEG_TO_RAD = Math.PI / 180;
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
-    const DEG_TO_RAD = Math.PI / 180;
-    const Y_AXIS = new THREE.Vector3(0, 1, 0);
+// mouse buttons
+const LEFT_MOUSE_BUTTON = 0;
+const MIDDLE_MOUSE_BUTTON = 1;
+const RIGHT_MOUSE_BUTTON = 2;
 
-    // mouse buttons
-    const LEFT_MOUSE_BUTTON = 0;
-    const MIDDLE_MOUSE_BUTTON = 1;
-    const RIGHT_MOUSE_BUTTON = 2;
-    
-    // camera movement bounds
-    const CAMERA_RADIUS_MIN = 4;
-    const CAMERA_RADIUS_MAX = 10;
-    const CAMERA_ELEVATION_MIN = 30;
-    const CAMERA_ELEVATION_MAX = 90;
-    
-    const camera = new THREE.PerspectiveCamera(75, window.offsetWidth / window.offsetHeight, 0.1, 1000);
-    
-    let cameraOrgin = new THREE.Vector3();
-    let cameraRadius = (CAMERA_RADIUS_MIN + CAMERA_RADIUS_MAX) / 2;
-    let cameraAzimuth = 0;
-    let cameraElevation = 45;
-    let isLeftMouseDown = false;
-    let isRightMouseDown = false;
-    let isMiddleMouseDown = false;
-    let previousMouseX = 0;
-    let previousMouseY = 0;
+// camera movement bounds
+const CAMERA_RADIUS_MIN = 4;
+const CAMERA_RADIUS_MAX = 10;
+const CAMERA_ELEVATION_MIN = 30;
+const CAMERA_ELEVATION_MAX = 90;
 
-    // camera movement speed
-    let cameraSpeed = 0.5;
-    let elevationSpeed = 0.2;
-    let zoomSpeed = 0.02;
-    let panSpeed = -0.01;
-    
-    camera.lookAt(0, 0, 0);
-    updateCameraPosition();
+// camera movement speed
+const CAMERA_SPEED = 0.5;
+const ELEVATION_SPEED = 0.2;
+const ZOOM_SPEED = 0.02;
+const PAN_SPEED = -0.01;    
 
-    function onMouseDown(event){
-        if (event.button === LEFT_MOUSE_BUTTON) {
-            isLeftMouseDown = true;
-        } else if (event.button === RIGHT_MOUSE_BUTTON) {
-            isRightMouseDown = true;
-        } else if (event.button === MIDDLE_MOUSE_BUTTON) {
-            isMiddleMouseDown = true;
+
+export class CameraManager {
+
+    constructor(){
+        const aspectRatio = window.offsetWidth / window.offsetHeight;
+        this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+        this.cameraOrgin = new THREE.Vector3();
+        this.cameraRadius = (CAMERA_RADIUS_MIN + CAMERA_RADIUS_MAX) / 2;
+        this.cameraAzimuth = 0;
+        this.cameraElevation = 45;
+
+        this.updateCameraPosition();
+
+        window.addEventListener('mousedown', this.onMouseDown.bind(this), false);
+        window.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+        window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+    }
+
+    updateCameraPosition(){
+        this.camera.zoom = this.cameraRadius;
+
+        this.camera.position.x = this.cameraRadius * Math.sin((this.cameraAzimuth * DEG_TO_RAD) * Math.cos(this.cameraElevation * DEG_TO_RAD));
+        this.camera.position.y = this.cameraRadius * Math.sin(this.cameraElevation * DEG_TO_RAD);
+        this.camera.position.z = this.cameraRadius * Math.cos(this.cameraAzimuth * DEG_TO_RAD) * Math.cos(this.cameraElevation * DEG_TO_RAD);
+        this.camera.position.add(this.cameraOrgin);
+        this.camera.lookAt(this.cameraOrgin);
+        this.camera.updateMatrixWorld();
+        this.camera.updateProjectionMatrix();
+    }
+
+    onMouseMove(event){
+        if (event.buttons && RIGHT_MOUSE_BUTTON){
+            this.cameraAzimuth += -((event.movementX) * PAN_SPEED);
+            this.cameraElevation += ((event.movementY) * PAN_SPEED);
+            this.cameraElevation = Math.min(CAMERA_ELEVATION_MAX, Math.max(CAMERA_ELEVATION_MIN, this.cameraElevation));
+            this.updateCameraPosition();
         }
+
+        this.updateCameraPosition();
     }
 
-    function onMouseUp(event){
-        if (event.button === LEFT_MOUSE_BUTTON) {
-            isLeftMouseDown = false;
-        } else if (event.button === RIGHT_MOUSE_BUTTON) {
-            isRightMouseDown = false;
-        } else if (event.button === MIDDLE_MOUSE_BUTTON) {
-            isMiddleMouseDown = false;
-        }
+    onMouseScroll(event) {
+        this.cameraRadius *= 1 - (event.deltaY * ZOOM_SPEED);
+        this.cameraRadius = Math.min(CAMERA_RADIUS_MAX, Math.max(CAMERA_RADIUS_MIN, this.cameraRadius));
+    
+        this.updateCameraPosition();
     }
 
-    function onMouseMove(event){
-        const deltaX = event.clientX - previousMouseX;
-        const deltaY = event.clientY - previousMouseY; 
-        if(isRightMouseDown){
-            cameraAzimuth += -((deltaX) * cameraSpeed);
-            cameraElevation += ((deltaY) * elevationSpeed);
-            cameraElevation = Math.min(CAMERA_ELEVATION_MAX, Math.max(CAMERA_ELEVATION_MIN, cameraElevation));
-            updateCameraPosition();
-        }
-        
-        previousMouseX = event.clientX;
-        previousMouseY = event.clientY;
-    }
-
-    function updateCameraPosition(){
-        camera.position.x = cameraRadius * Math.sin((cameraAzimuth * DEG_TO_RAD) * Math.cos(cameraElevation * DEG_TO_RAD));
-        camera.position.y = cameraRadius * Math.sin(cameraElevation * DEG_TO_RAD);
-        camera.position.z = cameraRadius * Math.cos(cameraAzimuth * DEG_TO_RAD) * Math.cos(cameraElevation * DEG_TO_RAD);
-        camera.position.add(cameraOrgin);
-        camera.lookAt(cameraOrgin);
-        camera.updateMatrixWorld();
-        camera.updateProjectionMatrix();
-    }
-
-
-    return {
-        camera,
-        onMouseDown,
-        onMouseUp,
-        onMouseMove,
-    }
 }
