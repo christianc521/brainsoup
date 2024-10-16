@@ -9,9 +9,6 @@ export function createWorkbench(sizeX, sizeY) {
     const cube = new THREE.Mesh(geometry, material);
     cube.position.y = -thickness / 2;
     workbench.add(cube);
-
-    // const gridHelper = new THREE.GridHelper(sizeX, 10);
-    // workbench.add(gridHelper);
     workbench.userData = { id: 'workbench' };
     return workbench;
 }

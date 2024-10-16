@@ -12,7 +12,7 @@ html, body {
     height: 100%;
 }
 
-#ui-toolbar {
+.ui-toolbar {
     position: absolute;
     top: 64px;
     bottom: 0px;
