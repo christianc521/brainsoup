@@ -1,23 +1,36 @@
-import * as THREE from 'three';
 
-const assets = {
-    'dowel': (x, y, z, length, thickness) => {
-        const geometry = new THREE.CylinderGeometry(thickness, thickness, length, 32);
-        const material = new THREE.MeshStandardMaterial({color:0xffffff});
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.userData = { id: 'dowel' };
-        mesh.position.set(x, y + length/2, z);
-        return mesh;
+
+export default {
+    "dowel" : {
+        "length" : 4,
+        "thickness" : 1,
+        "color" : 0xffffff,
+        "x" : 0,
+        "y" : 2,
+        "z" : 0,
+        "isGrounded" : true,
+        "normal" : [0, 0, 0],
+        "children" : [],
+        "parent" : null,
+        "assetID" : "dowel",
+        "UID" : 0,
+        "assetType" : "part",
+        "assetVolume" : 0,
+        "assetPrice" : .1,
     },
-}
-
-export function createAssetInstance(assetID, x, y, z, length, thickness){
-    if  (assetID in assets){
-        return assets[assetID](x, y, z, length, thickness);
-    }
-    else{
-        console.error(`Asset ID ${assetID} not found`);
-        return undefined;
-    }
-}
-
+    "dowel-connector" : {
+        "length" : 4,
+        "thickness" : 1,
+        "color" : 0xffffff,
+        "x" : 0,
+        "y" : 0,
+        "z" : 0,
+        "normal" : [0, 0, 0],
+        "parents" : [],
+        "assetID" : "dowel-connector",
+        "UID" : 0,
+        "assetType" : "joint",
+        "assetVolume" : 0,
+        "assetPrice" : .1,
+    }   
+}   

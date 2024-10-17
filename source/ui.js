@@ -44,6 +44,7 @@ export class UI {
         this.selectedControl.classList.add('selected');
         
         this.activeToolID = this.selectedControl.getAttribute('data-tool-id');
+        console.log(this.activeToolID);
 
         Object.keys(this.toolbars).forEach(id => {
             this.hideToolbar(id);

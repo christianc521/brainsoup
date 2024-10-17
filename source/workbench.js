@@ -9,6 +9,6 @@ export function createWorkbench(sizeX, sizeY) {
     const cube = new THREE.Mesh(geometry, material);
     cube.position.y = -thickness / 2;
     workbench.add(cube);
-    workbench.userData = { id: 'workbench' };
+    workbench.userData = { id: 'workbench', UID: 123443564 };
     return workbench;
 }
