@@ -18,7 +18,7 @@ export default {
         "assetVolume" : 0,
         "assetPrice" : .1,
     },
-    "dowel-connector" : {
+    "dowel-joint" : {
         "length" : 4,
         "thickness" : 1,
         "color" : 0xffffff,
@@ -27,7 +27,7 @@ export default {
         "z" : 0,
         "normal" : [0, 0, 0],
         "parents" : [],
-        "assetID" : "dowel-connector",
+        "assetID" : "dowel-joint",
         "UID" : 0,
         "assetType" : "joint",
         "assetVolume" : 0,

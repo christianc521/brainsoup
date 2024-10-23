@@ -1,0 +1,45 @@
+concept joint [Parts]
+purpose
+    connect two or more parts through joint creation
+state
+    independent, connected
+actions
+    create (x: Parts)
+        when x is independent and valid for joint creation
+        - create joint
+        - connect x
+        - x state becomes connected
+    destroy (x: Joint)
+        when x is connected
+        - destroy joint
+        - x state becomes independent
+operational principle
+
+concept dowel [Part]
+purpose
+    create a part for structural support
+state
+    valid, modified
+actions
+    create (x: Dowel)
+        when x is valid
+        - create dowel
+    destroy (x: Dowel)
+        when x is valid or modified
+        - destroy dowel
+    scale (x: Dowel, s: number)
+        - scale dowel length by s
+    rotate (x: Dowel, r: number)
+        - rotate dowel by r degrees
+    move (x: Dowel, v: Vector3)
+        - move dowel by v
+    modify (x: Dowel, y: Dowel, j: Joint)
+        when j is obstructed by x or y
+        - modify dowel
+        - x state becomes modified
+        - y state becomes modified
+    detach (x: Dowel, j: Joint)
+        when j is deleted
+        - modify dowel to original length
+        - x state becomes not modified
+operational principle

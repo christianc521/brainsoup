@@ -1,42 +1,86 @@
 html, body {
     height: 100%;
     margin: 0;
+    overflow: hidden; /* Prevent scrolling on the body */
 }
 
 #root-window {
     height: 100%;
+    overflow: hidden; /* Prevent scrolling on the root window */
 }
 
 #render-target {
-    position: relative;
-    height: 100%;
+    position: absolute;
+    top: 72px; /* Position below the toolbar */
+    left: 15%; /* Start after the left panel */
+    width: 70%; /* Take up the remaining width (100% - 18% - 18%) */
+    height: calc(100% - 72px); /* Full height minus toolbar height */
+    overflow: hidden; /* Prevent scrolling on the render target */
 }
 
 .ui-toolbar {
     position: absolute;
-    top: 64px;
-    bottom: 0px;
-    width: 150px;
+    top: 0px;
+    left: 0px;
+    height: auto;
+    width: 100%;
     padding: 16px;
     background-color: #00000033;
+    /* display buttons in a row at the top of the screen */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .ui-toolbar-button {
-    width: 100%;
+    width: auto;
     height: 40px;
     background-color: #00000033;
     border: 1px solid black;
-    border-radius: 4px;
+    border-radius: 20px;
     cursor: pointer;
-    margin: 4px 0;
+    margin: 0 4px;
+    padding: 0 16px;
     font-size: 16px;
+    white-space: nowrap;
 }
 
-.ui-toolbar-button:selected {
-    background-color: #55558855;
+.ui-toolbar-button.selected {
+    background-color: #5555881a;
 }
 
-.ui-toolbar-button:not(:selected):hover {
+.ui-toolbar-button:not(.selected):hover {
     background-color: #33333355;
 }
 
+.ui-panel {
+    position: absolute;
+    top: 72px; /* Position below the toolbar */
+    height: calc(100% - 72px); /* Full height minus toolbar height */
+    background-color: #f0f0f0; /* Light grey background */
+    overflow-y: auto; /* Allow vertical scrolling within panels if needed */
+    overflow-x: hidden; /* Prevent horizontal scrolling within panels */
+    width: 15%; /* Both panels take up 18% of the screen width */
+    scroll-behavior: smooth; /* Optional: Add smooth scrolling for panel content */
+}
+
+.ui-panel-left {
+    left: 0;
+    border-right: 1px solid #ccc; /* Add a border on the right side */
+}
+
+.ui-panel-right {
+    right: 0;
+    border-left: 1px solid #ccc; /* Add a border on the left side */
+}
+
+.ui-panel-header {
+    padding: 16px;
+    border-bottom: 1px solid #ccc;
+}
+
+.ui-panel-header h2 {
+    margin: 0;
+    font-size: 18px;
+}

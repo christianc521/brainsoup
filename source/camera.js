@@ -28,6 +28,7 @@ export class Camera {
         this.cameraRadius = (CAMERA_RADIUS_MIN + CAMERA_RADIUS_MAX) / 2;
         this.cameraElevation = (CAMERA_ELEVATION_MIN + CAMERA_ELEVATION_MAX) / 2;
         this.cameraAzimuth = 0;
+        
 
         this.updateCameraPosition();
 
@@ -48,6 +49,7 @@ export class Camera {
     }
 
     onMouseMove(event) {
+        event.preventDefault();
         if (event.buttons & 2) {
             this.cameraAzimuth += -(event.movementX * CAMERA_AZIMUTH_SENSITIVITY);
             this.cameraElevation += (event.movementY * CAMERA_ELEVATION_SENSITIVITY);
@@ -56,6 +58,11 @@ export class Camera {
         }
     }
 
+    // onWindowResize() {
+    //     camera.aspect = window.innerWidth / window.innerHeight;
+    //     camera.updateProjectionMatrix();
+    //     this.renderer.setSize( window.innerWidth, window.innerHeight );
+    // }
     
     
     

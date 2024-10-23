@@ -54,6 +54,20 @@ export class AssetManager {
                 topFace.position.z = asset.z;
                 topFace.userData.isFace = true;
 
+                // //draw normal line of topFace
+                // const faceNormal = topFace.getWorldPosition(new THREE.Vector3()).normalize();
+                // const faceCenter = topFace.getWorldPosition(new THREE.Vector3()).add(faceNormal.multiplyScalar(.5));
+                // // const faceNormalOffset = faceNormal
+                // // const normalLineGeometry = new THREE.BufferGeometry().setFromPoints
+                // const normalLineMaterial = new THREE.MeshBasicMaterial({color:0x000000});
+                // const normalLine = new THREE.Line(normalLineGeometry, normalLineMaterial);
+                // normalLine.position.x = faceCenter.x;
+                // normalLine.position.y = faceCenter.y;
+                // normalLine.position.z = faceCenter.z;
+                // normalLine.userData.isFace = false;
+
+
+
                 const geometry = new THREE.CylinderGeometry(asset.thickness, asset.thickness, asset.length, 32);
                 const material = new THREE.MeshStandardMaterial({color:asset.color});
                 const mesh = new THREE.Mesh(geometry, material);
@@ -65,6 +79,7 @@ export class AssetManager {
                 const group = new THREE.Object3D();
                 group.add(bottomFace);
                 group.add(topFace);
+                // group.add(normalLine);
                 group.add(mesh);
                 instance.add(group);
             }

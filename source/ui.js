@@ -42,7 +42,7 @@ export class UI {
         }
         this.selectedControl = event.target;
         this.selectedControl.classList.add('selected');
-        
+        console.log("selected css class added to: ", this.selectedControl)
         this.activeToolID = this.selectedControl.getAttribute('data-tool-id');
         console.log(this.activeToolID);
 

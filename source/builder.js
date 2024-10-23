@@ -5,7 +5,7 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { Camera } from './camera.js';
 import { Input } from './input.js';
 import { createWorkbench } from './workbench.js';
-import { AssetManager } from './AssetManager.js';
+import { AssetManager } from './assetManager.js';
 
 export class Builder {
 
@@ -18,10 +18,10 @@ export class Builder {
         console.log('Builder constructor called');
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.ui.builderWindow.clientWidth, window.ui.builderWindow.clientHeight);
         this.camera = new Camera();
         this.input = new Input();
         this.workbench = createWorkbench(10, 10);
-        this.renderer.setSize(window.ui.builderWindow.clientWidth, window.ui.builderWindow.clientHeight);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.placePosition = new THREE.Vector3();
@@ -37,6 +37,8 @@ export class Builder {
             this.initialize();
             this.start();
         });
+
+        // window.addEventListener('resize', this.onResize.bind(this), false);
     }
 
     initialize(){
@@ -81,6 +83,13 @@ export class Builder {
                     this.placePosition.setFromMatrixPosition(object.matrixWorld);
                     this.addDowelConnector();
                 }
+                else if (object == null || object.userData.UID == 123443564){
+                    console.log('clicked off dowel');
+                    this.useTool('select');
+                    window.ui.hideToolbar('ui-tool-dowel');
+                    window.ui.showToolbar('ui-tool-select');
+                    window.ui.onToolSelected({target: document.getElementById('select')});
+                }
             }
             else if (this.activeToolID === 'select'){
                 if (object !== null && object.userData.isFace){
@@ -92,10 +101,12 @@ export class Builder {
             if (this.activeToolID === 'add-dowel'){
                 if (!this.transformControls.dragging){
                     if (object == null || object.userData.UID == 123443564){
+                        console.log('clicked off dowel');
                         this.useTool('select');
                         this.setPosition();
                         window.ui.hideToolbar('ui-tool-dowel');
                         window.ui.showToolbar('ui-tool-select');
+                        // call ui onToolSelected with select
                     }
                 }
             }
@@ -116,7 +127,6 @@ export class Builder {
                 break;
             case 'add-dowel-connector':
                 console.log('add-dowel-connector tool active');
-                // this.addDowelConnector();
                 break;
             case 'set-position':
                 console.log('set-position tool active');
@@ -137,7 +147,7 @@ export class Builder {
 
     addDowelConnector(){
         console.log(this.placePosition);
-        const dowelConnector = this.assetManager.createAssetInstance('dowel-connector');
+        const dowelConnector = this.assetManager.createAssetInstance('dowel-joint');
         dowelConnector.position.x = this.placePosition.x;
         dowelConnector.position.y = this.placePosition.y;
         dowelConnector.position.z = this.placePosition.z;
@@ -153,11 +163,17 @@ export class Builder {
     // create function returning the 
 
     #raycast(){
-        var pos = {
-            x: (this.input.mouse.x / this.renderer.domElement.clientWidth) * 2 - 1,
-            y: -(this.input.mouse.y / this.renderer.domElement.clientHeight) * 2 + 1,
+        var rect = this.renderer.domElement.getBoundingClientRect();
+        // var pos = {
+        //     x: (this.input.mouse.x / rect.width) * 2 - 1,
+        //     y: -(this.input.mouse.y / rect.height) * 2 + 1,
+        // }
+        var mouse = {
+            x: ( ( this.input.mouse.x - rect.left ) / ( rect.right - rect.left ) ) * 2 - 1,
+            y: - ( ( this.input.mouse.y - rect.top ) / ( rect.bottom - rect.top) ) * 2 + 1,
         }
-        this.raycaster.setFromCamera(pos, this.camera.camera);
+
+        this.raycaster.setFromCamera(mouse, this.camera.camera); 
 
         // Get all intersections without filtering
         let intersections = this.raycaster.intersectObjects(this.scene.children, true);
@@ -187,6 +203,7 @@ export class Builder {
         
         return null;
     }
+
 }
 
 window.onload = () => {
