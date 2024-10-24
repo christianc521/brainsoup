@@ -10,22 +10,24 @@
 	<body>
         <div id="root-window">
             <div id="render-target"></div>
-            <div id="ui-tool-select" class="ui-toolbar">
-                <button id="select" class="ui-toolbar-button selected" onclick="ui.onToolSelected(event)" data-tool-id="select">Select</button>
-                <button id="button-add-dowel" class="ui-toolbar-button" onclick="ui.onToolSelected(event)" data-tool-id="add-dowel">Add Dowel</button>
-                <button id="button-add-dowel-connector" class="ui-toolbar-button" onclick="ui.onToolSelected(event)" data-tool-id="add-dowel-connector">Add Dowel Connector</button>
-            </div>
-            <div id="ui-tool-dowel" class="ui-toolbar" style="display: none;">
-                <button id="button-set-position" class="ui-toolbar-button" onclick="ui.onToolSelected(event)" data-tool-id="set-position">Set Position</button>
-            </div>
-            <div id="ui-left-panel" class="ui-panel">
-                <div id="ui-left-panel-header" class="ui-panel-header">
-                    <h2>Dowel</h2>
+            <div id="ui">
+                <div id="ui-tool-select" class="ui-toolbar">
+                    <button id="select" class="ui-toolbar-button selected" onclick="ui.onToolSelected(event)" data-tool-id="select">Select</button>
+                    <button id="button-add-dowel" class="ui-toolbar-button" onclick="ui.onToolSelected(event)" data-tool-id="add-dowel">Add Dowel</button>
+                    <button id="button-add-dowel-connector" class="ui-toolbar-button" onclick="ui.onToolSelected(event)" data-tool-id="add-dowel-connector">Add Dowel Connector</button>
                 </div>
-            </div>
-            <div id="ui-right-panel" class="ui-panel ui-panel-right">
-                <div id="ui-right-panel-header" class="ui-panel-header">
-                    <h2>Properties</h2>
+                <div id="ui-tool-dowel" class="ui-toolbar" style="display: none;">
+                    <button id="button-set-position" class="ui-toolbar-button" onclick="ui.onToolSelected(event)" data-tool-id="set-position">Set Position</button>
+                </div>
+                <div id="ui-left-panel" class="ui-panel">
+                    <div id="ui-left-panel-header" class="ui-panel-header">
+                        <h2 id="ui-left-panel-header-text">test</h2>
+                    </div>
+                </div>
+                <div id="ui-right-panel" class="ui-panel ui-panel-right">
+                    <div id="ui-right-panel-header" class="ui-panel-header">
+                        <h2>Properties</h2>
+                    </div>
                 </div>
             </div>
         </div>

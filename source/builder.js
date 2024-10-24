@@ -70,48 +70,41 @@ export class Builder {
         this.renderer.render(this.scene, this.camera.camera);
 
         if (this.input.leftMouseButtonDown){
-            const object = this.#raycast();
-            if (this.activeToolID === 'add-dowel-connector'){
-                if (object !== null && object.userData.isFace){
-                    //check if clicked on face
-                    console.log(object.parent.position);
-                    //object parent is dowel
-                    // this.placePosition.x = object.parent.position.x;
-                    // //object is face
-                    // this.placePosition.y = object.position.y;
-                    // this.placePosition.z = object.parent.position.z;
-                    this.placePosition.setFromMatrixPosition(object.matrixWorld);
-                    this.addDowelConnector();
-                }
-                else if (object == null || object.userData.UID == 123443564){
-                    console.log('clicked off dowel');
-                    this.useTool('select');
-                    window.ui.hideToolbar('ui-tool-dowel');
-                    window.ui.showToolbar('ui-tool-select');
-                    window.ui.onToolSelected({target: document.getElementById('select')});
-                }
-            }
-            else if (this.activeToolID === 'select'){
-                if (object !== null && object.userData.isFace){
-                    console.log(object.position);
-                    
-                }
-            }
-            // set position of dowel if not dragging and clicked off
-            if (this.activeToolID === 'add-dowel'){
-                if (!this.transformControls.dragging){
-                    if (object == null || object.userData.UID == 123443564){
-                        console.log('clicked off dowel');
+            const result = this.#raycast();
+            if (result !== null) {
+                if (this.activeToolID === 'add-dowel-connector'){
+                    if (result.isFace){
+                        console.log('clicked on face');
+                        this.placePosition.setFromMatrixPosition(result.intersectedObject.matrixWorld);
+                        this.addDowelConnector();
                         this.useTool('select');
-                        this.setPosition();
-                        window.ui.hideToolbar('ui-tool-dowel');
-                        window.ui.showToolbar('ui-tool-select');
-                        // call ui onToolSelected with select
+                        window.ui.resetToolbars();
+                    }
+                }
+                else if (this.activeToolID === 'select'){
+                    window.ui.updateLeftPanel(result.object);
+                    if (result.object.userData.assetID === 'dowel'){
+                        if (this.selectedObject !== result.intersectedObject.parent) {
+                            this.selectedObject = result.intersectedObject.parent;
+                            this.useTool('select-transform');
+                            this.editPosition(result.intersectedObject.parent);
+                        }
+                    }
+                }
+                // set position of dowel if not dragging and clicked off
+                else if (this.activeToolID === 'add-dowel'){
+                    if (!this.transformControls.dragging){
+                        if (result == null || result.object.userData.UID == 123443564){
+                            console.log('clicked off dowel');
+                            this.useTool('select');
+                            this.setPosition();
+                            window.ui.resetToolbars();
+                        }
                     }
                 }
             }
-            
-
+        } else {
+            this.selectedObject = null; // Reset selected object when mouse button is released
         }
     }
 
@@ -129,7 +122,6 @@ export class Builder {
                 console.log('add-dowel-connector tool active');
                 break;
             case 'set-position':
-                console.log('set-position tool active');
                 this.setPosition();
                 break;
         }
@@ -138,66 +130,73 @@ export class Builder {
     addDowel(){
         const dowel = this.assetManager.createAssetInstance('dowel');
         this.scene.add(dowel);
-        this.transformControls = new TransformControls(this.camera.camera, this.renderer.domElement);
-        this.transformControls.size = 5;
-        this.transformControls.showY = false;
-        this.transformControls.attach(dowel);
-        this.scene.add(this.transformControls.getHelper());
+        this.editPosition(dowel);
     }
 
     addDowelConnector(){
-        console.log(this.placePosition);
+        console.log("called addDowelConnector");
         const dowelConnector = this.assetManager.createAssetInstance('dowel-joint');
         dowelConnector.position.x = this.placePosition.x;
         dowelConnector.position.y = this.placePosition.y;
         dowelConnector.position.z = this.placePosition.z;
         this.scene.add(dowelConnector);
     }
-
+    editPosition(object){
+        //set active tool to add-dowel
+        if (this.transformControls) {
+            this.transformControls.detach();
+            this.scene.remove(this.transformControls);
+        }
+        this.transformControls = new TransformControls(this.camera.camera, this.renderer.domElement);
+        this.transformControls.size = 5;
+        this.transformControls.showY = false;
+        
+        
+        if (object instanceof THREE.Object3D) {
+            this.transformControls.attach(object);
+            this.scene.add(this.transformControls);
+            this.scene.add(this.transformControls.getHelper());
+            this.activeToolID = "add-dowel";
+        } else {
+            console.error('Attempted to attach TransformControls to a non-Object3D:', object);
+        }
+    }
     setPosition(){
-        console.log("parent:", this.transformControls.object.parent);
-        console.log("child:", this.transformControls.object);
         this.transformControls.detach();
     }
+
 
     // create function returning the 
 
     #raycast(){
         var rect = this.renderer.domElement.getBoundingClientRect();
-        // var pos = {
-        //     x: (this.input.mouse.x / rect.width) * 2 - 1,
-        //     y: -(this.input.mouse.y / rect.height) * 2 + 1,
-        // }
         var mouse = {
-            x: ( ( this.input.mouse.x - rect.left ) / ( rect.right - rect.left ) ) * 2 - 1,
-            y: - ( ( this.input.mouse.y - rect.top ) / ( rect.bottom - rect.top) ) * 2 + 1,
+            x: ((this.input.mouse.x - rect.left) / rect.width) * 2 - 1,
+            y: -((this.input.mouse.y - rect.top) / rect.height) * 2 + 1,
         }
-
         this.raycaster.setFromCamera(mouse, this.camera.camera); 
+        
+        // Filter out TransformControls from the raycasting
+        const objectsToIntersect = this.scene.children.filter(child => child.userData.assetName);
 
-        // Get all intersections without filtering
-        let intersections = this.raycaster.intersectObjects(this.scene.children, true);
+        let intersections = this.raycaster.intersectObjects(objectsToIntersect, true);
 
         if (intersections.length > 0) {
-            
-            // Find the first intersection that has a valid UID
-            for (let intersection of intersections) {
-                let object = intersection.object;
-                // Traverse up the object hierarchy to find userData
-                while (object) {
-                    if (object.userData.isFace){
-                        console.log(object.userData.isFace);
-                        console.log(object.position);
-                        console.log("object:", object);
-                        return object;
-                    }
-                    if (object.userData && object.userData.UID) {
-                        object.userData.isFace = false;
-                        console.log(object.userData.isFace);
-                        return object;
-                    }
-                    object = object.parent;
-                }
+            let intersectedObject = intersections[0].object;
+            let parentAsset = intersectedObject;
+            console.log('intersectedObject: ', intersectedObject);
+            // Find the parent asset
+            while (parentAsset && !parentAsset.userData.assetName) {
+                parentAsset = parentAsset.parent;
+            }
+
+            if (parentAsset) {
+                console.log('parentAsset: ', parentAsset, ' is face: ', intersectedObject.userData.isFace);
+                return {
+                    object: parentAsset,
+                    isFace: intersectedObject.userData.isFace || false,
+                    intersectedObject: intersectedObject
+                };
             }
         }
         

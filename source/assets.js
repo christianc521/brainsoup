@@ -17,6 +17,7 @@ export default {
         "assetType" : "part",
         "assetVolume" : 0,
         "assetPrice" : .1,
+        "assetName" : "Dowel"
     },
     "dowel-joint" : {
         "length" : 4,
@@ -32,5 +33,6 @@ export default {
         "assetType" : "joint",
         "assetVolume" : 0,
         "assetPrice" : .1,
+        "assetName" : "Dowel Joint"
     }   
 }   

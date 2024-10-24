@@ -36,70 +36,54 @@ export class AssetManager {
         if (assetID in this.assets){
             const asset = this.assets[assetID];
             const instance = new THREE.Object3D();
+            instance.userData = {...asset};
+            instance.userData.UID = this.UID++;
+
             if (asset.assetType === "part"){
-                const bottomFaceGeometry = new THREE.CylinderGeometry(asset.thickness + .1, asset.thickness + .1, .1, 32);
-                const bottomFaceMaterial = new THREE.MeshStandardMaterial({color:0xff0000});
-                const bottomFace = new THREE.Mesh(bottomFaceGeometry, bottomFaceMaterial);
-                // bottomFace.rotateX(-Math.PI / 2);
-                bottomFace.position.x = asset.x;
-                bottomFace.position.y = 0;
-                bottomFace.position.z = asset.z;
-                bottomFace.userData.isFace = true;
-
-                const topFaceGeometry = new THREE.CylinderGeometry(asset.thickness + .1, asset.thickness + .1, .1, 32);
-                const topFaceMaterial = new THREE.MeshStandardMaterial({color:0x00ff00});
-                const topFace = new THREE.Mesh(topFaceGeometry, topFaceMaterial);
-                topFace.position.x = asset.x;
-                topFace.position.y = asset.length + .01;
-                topFace.position.z = asset.z;
-                topFace.userData.isFace = true;
-
-                // //draw normal line of topFace
-                // const faceNormal = topFace.getWorldPosition(new THREE.Vector3()).normalize();
-                // const faceCenter = topFace.getWorldPosition(new THREE.Vector3()).add(faceNormal.multiplyScalar(.5));
-                // // const faceNormalOffset = faceNormal
-                // // const normalLineGeometry = new THREE.BufferGeometry().setFromPoints
-                // const normalLineMaterial = new THREE.MeshBasicMaterial({color:0x000000});
-                // const normalLine = new THREE.Line(normalLineGeometry, normalLineMaterial);
-                // normalLine.position.x = faceCenter.x;
-                // normalLine.position.y = faceCenter.y;
-                // normalLine.position.z = faceCenter.z;
-                // normalLine.userData.isFace = false;
-
-
-
+                // Create bottom face
+                const bottomFace = this.createFace(asset, 0xff0000, -asset.length/2);
+                
+                // Create top face
+                const topFace = this.createFace(asset, 0x00ff00, asset.length/2);
+                
+                // Create main cylinder
                 const geometry = new THREE.CylinderGeometry(asset.thickness, asset.thickness, asset.length, 32);
-                const material = new THREE.MeshStandardMaterial({color:asset.color});
+                const material = new THREE.MeshStandardMaterial({color: asset.color});
                 const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.x = asset.x;
-                mesh.position.y = asset.y;
-                mesh.position.z = asset.z;
-                mesh.userData.isFace = false;
-
-                const group = new THREE.Object3D();
-                group.add(bottomFace);
-                group.add(topFace);
-                // group.add(normalLine);
-                group.add(mesh);
-                instance.add(group);
+                
+                // Apply asset data to all parts and set parent reference
+                // [bottomFace, topFace, mesh].forEach(part => {
+                //     part.userData = {...instance.userData};
+                //     part.userData.parentAsset = instance;
+                // });
+                instance.add(bottomFace, topFace, mesh);
             }
             else if (asset.assetType === "joint"){
                 const geometry = new THREE.SphereGeometry(asset.radius, 32, 32);
                 const material = new THREE.MeshStandardMaterial({color:asset.color});
                 const mesh = new THREE.Mesh(geometry, material);
+                mesh.userData = {...instance.userData};
+                mesh.userData.parentAsset = instance;
                 instance.add(mesh);
             }
-            instance.userData = asset;
-            instance.userData.UID = this.UID;
-            this.UID++;
+
+            instance.position.set(asset.x, asset.y, asset.z);
             this.createdAssets.push(instance);
-            console.log("created:", instance);
             return instance;    
         }
         else{
             console.error(`Asset ID ${assetID} not found`);
             return undefined;
         }
+    }
+
+    createFace(asset, color, yOffset) {
+        const faceGeometry = new THREE.CylinderGeometry(asset.thickness + 0.1, asset.thickness + 0.1, 0.1, 32);
+        const faceMaterial = new THREE.MeshStandardMaterial({color: color});
+        const face = new THREE.Mesh(faceGeometry, faceMaterial);
+        face.position.y = yOffset;
+        face.userData.isFace = true;
+        return face;
     }
 
     getAssetByUID(UID){

@@ -25,12 +25,14 @@ html, body {
     height: auto;
     width: 100%;
     padding: 16px;
-    background-color: #00000033;
+    background-color: #f0f0f0;
     /* display buttons in a row at the top of the screen */
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    border-bottom: 1px solid #7a7a7a95;
+    z-index: 100;
 }
 
 .ui-toolbar-button {
@@ -38,7 +40,7 @@ html, body {
     height: 40px;
     background-color: #00000033;
     border: 1px solid black;
-    border-radius: 20px;
+    border-radius: 10px;
     cursor: pointer;
     margin: 0 4px;
     padding: 0 16px;

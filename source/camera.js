@@ -31,6 +31,7 @@ export class Camera {
         
 
         this.updateCameraPosition();
+        
 
         window.ui.builderWindow.addEventListener('mousemove', this.onMouseMove.bind(this), false);
         window.ui.builderWindow.addEventListener('mousedown', this.onMouseMove.bind(this), false);
