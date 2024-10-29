@@ -43,3 +43,8 @@ actions
         - modify dowel to original length
         - x state becomes not modified
 operational principle
+
+
+1. UI.addDowel class (ui button) creates mesh and geometry
+2. addDowel calls addDowelCommand class and passes the dowel object to the command
+3. addDowelCommand passes the object to the Builder (addDowelCommand could handle undo, history, create object info in JSON -> add to )
